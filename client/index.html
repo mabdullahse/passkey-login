@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Passkeys</title>
+  </head>
+  <body>
+    <h1>Home: Passkeys</h1>
+    <button id="register">Register a user</button>
+  </body>
+
+  <script>
+    document.getElementById("register").addEventListener("click", (e) => {
+      window.location.replace("http://localhost:3000/register.html");
+    });
+  </script>
+</html>

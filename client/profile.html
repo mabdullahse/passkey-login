@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+  </head>
+  <body>
+    <h1>Profile Page</h1>
+    <button id="register-passkey-btn">Register Passkey</button>
+    <button id="success"></button>
+    <button id="error"></button>
+  </body>
+  <script>
+    const elemSuccess = document.getElementById("success");
+    const elemError = document.getElementById("error");
+
+    const registerPasskeyBtn = document.getElementById("register-passkey-btn");
+
+    registerPasskeyBtn.addEventListener("click", async (e) => {
+      const url = new URL(window.location);
+      const userId = url.searchParams.get("userId");
+
+      const response = await fetch("/register-challenge", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const challengeResult = await response.json();
+      if (challengeResult.error) {
+        return alert(challengeResult.error);
+      }
+      const { options } = challengeResult; // Server side challenge
+
+      let attResp;
+      try {
+        // Pass the options to the authenticator and wait for a response
+        attResp = await SimpleWebAuthnBrowser.startRegistration({ ...options });
+
+        console.log(attResp);
+      } catch (error) {
+        // Some basic error handling
+        if (error.name === "InvalidStateError") {
+          elemError.innerText =
+            "Error: Authenticator was probably already registered by user";
+        } else {
+          elemError.innerText = error;
+        }
+
+        throw error;
+      }
+
+      await fetch("/register-verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, cred: attResp }),
+      });
+    });
+  </script>
+</html>
