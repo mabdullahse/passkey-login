@@ -16,5 +16,5 @@ be stored on Backend as a passkey in this call app.post('/register-verify' using
 
 ### so later on, how to do login
 
-user request to login => BE respond with that user challenge => user will verify that like provide the request cred
+user request to login (app.post('/login-challenge',) => BE respond with that user challenge => user will verify that like provide the request cred
 then that request passed to BE which is on this app.post('/login-verify and gets veriftied using verifyAuthenticationResponse
